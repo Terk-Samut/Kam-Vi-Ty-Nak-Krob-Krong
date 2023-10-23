@@ -22,7 +22,7 @@ jobs:
           cache: 'pnpm'
 
       - run: pnpm install
-      - run: pnpm compile
+      - run: pnpm build
 
       - name: Déployer
         uses: peaceiris/actions-gh-pages@v3
