@@ -9,8 +9,10 @@
     "format": "npx prettier --write \"**/*.{js,mjs,cjs,ts,mts,cts,vue,json}\""
   },
   "dependencies": {
+    "@constl/ipa": "^0.9.3",
     "@mdi/font": "^7.3.67",
     "apexcharts": "^3.37.0",
+    "buffer": "^6.0.3",
     "chart.js": "^4.3.0",
     "core-js": "^3.8.3",
     "leaflet": "^1.9.3",

@@ -19,10 +19,10 @@
               >
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
+                <v-btn color="blue darken-1" @click="closeDelete"
                   >អត់ទេ</v-btn
                 >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+                <v-btn color="blue darken-1" @click="deleteItemConfirm"
                   >យល់ព្រម</v-btn
                 >
                 <v-spacer></v-spacer>
@@ -31,10 +31,8 @@
           </v-dialog>
         </v-card>
         <!-- funtion -->
-        <v-card-container>
-          <v-card class="d-flex mb-6" flat style="height: 30px">
-            <v-card class="pa-2 mr-auto" flat> </v-card>
-            <v-card class="pa-2" flat>
+          <v-card class="d-flex">
+            <v-card class="pa-2 ms-auto" flat>
               <v-container
                 style="
                   padding: 0;
@@ -43,16 +41,17 @@
                   margin-right: 10px;
                   width: 400px;
                 "
-                class="d-flex justify-start mb-6"
+                class="d-flex justify-start"
                 flat
                 tile
               >
-                <v-subheader style="font-size: 15px">ស្វែងរក</v-subheader>
+                <v-subheader style="font-size: 15px"></v-subheader>
                 <v-text-field
                   v-model="search"
                   outlined
                   dense
                   append-icon="mdi-magnify"
+                  label="ស្វែងរក"
                 ></v-text-field>
               </v-container>
             </v-card>
@@ -61,7 +60,7 @@
           <v-card style="margin-top: 30px; padding: 20px; width: 100%" flat>
             <v-card class="khmer-font">
               <v-data-table
-                :items-per-page="itemsPerPage"
+                :items-per-page="50"
                 :headers="headers"
                 :items="users"
                 :search="search"
@@ -78,79 +77,21 @@
               </v-data-table>
             </v-card>
           </v-card>
-        </v-card-container>
       </v-card>
     </v-row>
   </v-main>
 </template>
-<script>
-export default {
-  data: () => ({
-    dialog: false,
-    dialogDelete: false,
-    search: "",
-    genders: ["ប្រុស", "ស្រី"],
-    headers: [
-      {
-        text: "លេខសម្គាល់",
-        align: "start",
-        sortable: false,
-        value: "id",
-        width: "10%",
-        class: "white--text",
-      },
-      { text: "ឈ្មោះ", value: "name", width: "10%", class: "white--text" },
-      { text: "ភេទ", value: "gender", width: "10%", class: "white--text" },
-      { text: "លេខទូរស័ព្ទ", value: "tel", width: "10%", class: "white--text" },
-      {
-        text: "សកម្មភាព",
-        value: "actions",
-        width: "10%",
-        sortable: false,
-        class: "white--text",
-      },
-    ],
-    users: [],
-    color: "#1E7E9C",
-    editedIndex: -1,
-    editedItem: {
-      name: "",
-      id: "",
-      gender: "",
-      tel: "",
-    },
-    defaultItem: {
-      name: "",
-      id: "",
-      gender: "",
-      tel: "",
-    },
-  }),
+<script setup lang="ts">
+import { computed } from 'vue';
+import { ref } from 'vue';
 
-  computed: {
-    formTitle() {
-      return this.editedIndex === -1
-        ? "បង្កើតព័ត៌មានថ្មីរបស់អ្នកប្រើប្រាស់"
-        : "កែប្រែព័ត៌មានរបស់អ្នកប្រើប្រាស់";
-    },
-  },
+import { VDataTable } from 'vuetify/labs/VDataTable'
 
-  watch: {
-    dialog(val) {
-      val || this.close();
-    },
-    dialogDelete(val) {
-      val || this.closeDelete();
-    },
-  },
-
-  created() {
-    this.initialize();
-  },
-
-  methods: {
-    initialize() {
-      this.users = [
+const dialog = ref(false);
+    const dialogDelete = ref(false);
+    const search = ref("");
+    const genders = ref(["ប្រុស", "ស្រី"]);
+    const users = ref([
         {
           name: "វុទ្ធី សម្បត្តិ",
           id: "OBS-KSM 001",
@@ -193,52 +134,91 @@ export default {
 
           tel: "098735664",
         },
-      ];
-    },
+      ]);
+    const editedIndex = ref(-1);
+    const editedItem = ref({
+      name: "",
+      id: "",
+      gender: "",
+      tel: "",
+    });
+    const defaultItem = ref({
+      name: "",
+      id: "",
+      gender: "",
+      tel: "",
+    });
+    
+const headers: {
+  title: string,
+  align?: 'start' | 'end' | 'center',
+  sortable?: boolean,
+  value: string,
+  width: string,
+}[] = [
+      {
+        title: "លេខសម្គាល់",
+        align: "start",
+        sortable: false,
+        value: "id",
+        width: "10%",
+        
+      },
+      { title: "ឈ្មោះ", value: "name", width: "10%",  },
+      { title: "ភេទ", value: "gender", width: "10%",  },
+      { title: "លេខទូរស័ព្ទ", value: "tel", width: "10%",  },
+      {
+        title: "សកម្មភាព",
+        value: "actions",
+        width: "10%",
+        sortable: false,
+        
+      },
+    ]
 
-    editItem(item) {
-      this.editedIndex = this.users.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
-    },
+const formTitle = computed(() => {
+  return editedIndex.value === -1
+    ? "បង្កើតព័ត៌មានថ្មីរបស់អ្នកប្រើប្រាស់"
+    : "កែប្រែព័ត៌មានរបស់អ្នកប្រើប្រាស់";
+});
 
-    deleteItem(item) {
-      this.editedIndex = this.users.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialogDelete = true;
-    },
+const editItem = (item) => {
+      editedIndex.value = users.value.indexOf(item);
+      editedItem.value = Object.assign({}, item);
+      dialog.value = true;
+    }
 
-    deleteItemConfirm() {
-      this.users.splice(this.editedIndex, 1);
-      this.closeDelete();
-    },
+    const deleteItem = (item) => {
+      editedIndex.value = users.value.indexOf(item);
+      editedItem.value = Object.assign({}, item);
+      dialogDelete.value = true;
+    }
 
-    close() {
-      this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
+    const deleteItemConfirm = () => {
+      users.value.splice(editedIndex.value, 1);
+      closeDelete();
+    }
 
-    closeDelete() {
-      this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
+    const close = () => {
+      dialog.value = false;
+        editedItem.value = Object.assign({}, defaultItem.value);
+        editedIndex.value = -1;
+    }
 
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.users[this.editedIndex], this.editedItem);
+    const closeDelete = () => {
+      dialogDelete.value = false;
+        editedItem.value = Object.assign({}, defaultItem.value);
+        editedIndex.value = -1;
+    }
+
+    const save = () => {
+      if (editedIndex.value > -1) {
+        Object.assign(users.value[editedIndex.value], editedItem.value);
       } else {
-        this.users.push(this.editedItem);
       }
-      this.close();
-    },
-  },
-};
+      users.value = [...users.value, editedItem.value];
+      close();
+    }
 </script>
 <style scoped>
 @font-face {

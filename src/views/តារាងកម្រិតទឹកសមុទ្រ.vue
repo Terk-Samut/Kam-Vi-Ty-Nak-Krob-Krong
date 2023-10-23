@@ -83,28 +83,24 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">
+                <v-btn color="blue darken-1" @click="close">
                   ត្រឡប់ក្រោយ
                 </v-btn>
-                <v-btn color="blue darken-1" text @click="save">
+                <v-btn color="blue darken-1" @click="save">
                   រក្សាទុក
                 </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
         </v-card>
-        <v-card class="d-flex mb-6" flat style="height: 30px">
-          <v-card class="pa-2 mr-auto" flat> </v-card>
-          <v-card class="pa-2" flat>
+        
+        <v-card class="d-flex" flat>
+          <v-card class="pa-2 ms-auto" flat>
             <v-container
               style="
-                padding: 0;
-                margin: 0;
-                margin-top: 10px;
-                margin-right: 10px;
                 width: 400px;
               "
-              class="d-flex justify-start mb-6"
+              class="d-flex justify-start"
               flat
               tile
             >
@@ -174,35 +170,37 @@ const defaultItem = ref({
   time: "",
   ec: "",
 });
-const headers = [
+const headers: {
+  title: string,
+  align?: 'start' | 'end' | 'center',
+  sortable?: boolean,
+  value: string,
+  width: string,
+}[] = [
   {
-    text: "លេខសម្គាល់",
+    title:"លេខសម្គាល់",
     align: "start",
     sortable: false,
     value: "id",
     width: "10%",
-    class: "white--text",
   },
   {
-    text: "រយៈទទឹង",
+    title:"រយៈទទឹង",
     value: "latitude",
     width: "10%",
-    class: "white--text",
   },
   {
-    text: "រយៈបណ្ដោយ",
+    title:"រយៈបណ្ដោយ",
     value: "longtitude",
     width: "10%",
-    class: "white--text",
   },
   {
-    text: "ថ្ងៃខែឆ្នាំ",
+    title:"ថ្ងៃខែឆ្នាំ",
     value: "date",
     width: "10%",
-    class: "white--text",
   },
-  { text: "ពេលវេលា", value: "time", width: "10%", class: "white--text" },
-  { text: "តម្លៃEc", value: "ec", width: "10%", class: "white--text" },
+  { title:"ពេលវេលា", value: "time", width: "10%" },
+  { title:"តម្លៃEc", value: "ec", width: "10%" },
 ];
 const ទិន្នន័យ = ref([
   {
