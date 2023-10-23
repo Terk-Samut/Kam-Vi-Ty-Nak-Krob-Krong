@@ -313,6 +313,7 @@ body {
 .khmer-font-body {
   font-size: 16px;
 }
+
 :v-deep(.v-data-table-header) {
   background-color: #2197bc;
 }
