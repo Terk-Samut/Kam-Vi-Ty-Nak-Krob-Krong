@@ -1,19 +1,15 @@
 <template>
-  
-    <mainTemplate/>
-   
-    
+  <mainTemplate />
 </template>
 
 <script>
-import mainTemplate from './components/mainTemplate.vue';
+import mainTemplate from "./components/mainTemplate.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-            mainTemplate,
-            
-        },
+    mainTemplate,
+  },
 
   data: () => ({
     //
