@@ -18,14 +18,13 @@
           >
 
           <v-dialog v-model="dialog" max-width="500px">
-            <template v-slot:activator="{ on, attrs }">
+            <template v-slot:activator="{ props }">
               <v-btn
                 color="#00C853"
                 dark
                 class="ml-2 mb-2"
-                v-bind="attrs"
-                v-on="on"
-                ><v-icon small @click="editItem(item)" color="white">
+                v-bind="props"
+                ><v-icon small @click="editItem()" color="white">
                   mdi-plus
                 </v-icon>
                 បន្ថែមថ្មី
@@ -94,219 +93,202 @@
             </v-card>
           </v-dialog>
         </v-card>
-          <v-card class="d-flex mb-6" flat style="height: 30px">
-            <v-card class="pa-2 mr-auto" flat> </v-card>
-            <v-card class="pa-2" flat>
-              <v-container
-                style="
-                  padding: 0;
-                  margin: 0;
-                  margin-top: 10px;
-                  margin-right: 10px;
-                  width: 400px;
-                "
-                class="d-flex justify-start mb-6"
-                flat
-                tile
-              >
-                <v-subheader style="font-size: 15px">ស្វែងរក</v-subheader>
-                <v-text-field
-                  v-model="search"
-                  outlined
-                  dense
-                  append-icon="mdi-magnify"
-                ></v-text-field>
-              </v-container>
-            </v-card>
+        <v-card class="d-flex mb-6" flat style="height: 30px">
+          <v-card class="pa-2 mr-auto" flat> </v-card>
+          <v-card class="pa-2" flat>
+            <v-container
+              style="
+                padding: 0;
+                margin: 0;
+                margin-top: 10px;
+                margin-right: 10px;
+                width: 400px;
+              "
+              class="d-flex justify-start mb-6"
+              flat
+              tile
+            >
+              <v-text-field
+                v-model="search"
+                outlined
+                dense
+                append-icon="mdi-magnify"
+                label="ស្វែងរក"
+              ></v-text-field>
+            </v-container>
           </v-card>
+        </v-card>
 
-          <!-- table -->
-          <v-card style="margin-top: 30px; padding: 20px; width: 100%" flat>
-            <v-card>
-              <v-data-table
-                :items-per-page="itemsPerPage"
-                :headers="headers"
-                :items="users"
-                :search="search"
-              >
-                <!-- button action      -->
-                <template v-slot:[`item.actions`]="{ item }"> </template>
-              </v-data-table>
-            </v-card>
+        <!-- table -->
+        <v-card style="margin-top: 30px; padding: 20px; width: 100%" flat>
+          <v-card>
+            <v-data-table
+              :items-per-page="50"
+              :headers="headers"
+              :items="ទិន្នន័យ"
+              :search="search"
+            >
+              <!-- button action      -->
+              <template v-slot:[`item.actions`]="{ item }"> </template>
+            </v-data-table>
           </v-card>
+        </v-card>
       </v-card>
     </v-row>
   </v-main>
 </template>
-<script>
+<script setup lang="ts">
 import * as XLSX from "xlsx/dist/xlsx.full.min.js";
-export default {
-  data: () => ({
-    dialog: false,
-    dialogDelete: false,
-    search: "",
+import { VDataTable } from "vuetify/labs/VDataTable";
+import { ref, computed } from "vue";
 
-    headers: [
-      {
-        text: "លេខសម្គាល់",
-        align: "start",
-        sortable: false,
-        value: "id",
-        width: "10%",
-        class: "white--text",
-      },
-      {
-        text: "រយៈទទឹង",
-        value: "latitude",
-        width: "10%",
-        class: "white--text",
-      },
-      {
-        text: "រយៈបណ្ដោយ",
-        value: "longtitude",
-        width: "10%",
-        class: "white--text",
-      },
-      {
-        text: "ថ្ងៃខែឆ្នាំ",
-        value: "date",
-        width: "10%",
-        class: "white--text",
-      },
-      { text: "ពេលវេលា", value: "time", width: "10%", class: "white--text" },
-      { text: "តម្លៃEc", value: "ec", width: "10%", class: "white--text" },
-    ],
-    users: [
-      {
-        id: "OBS-KSM 001",
-        latitude: "120",
-        longtitude: "200",
-        time: "11:12 ",
-        date: "2022-10-02",
-        ec: "200 ",
-      },
-      {
-        id: "OBS-KSM 002",
-        latitude: "100",
-        longtitude: "200",
-        time: "11:12 ",
-        date: "2022-10-02",
-        ec: "200 ",
-      },
-      {
-        id: "OBS-KSM 003",
-        latitude: "110",
-        longtitude: "500",
-        time: "11:12 ",
-        date: "2022-10-02",
-        ec: "200 ",
-      },
-      {
-        id: "OBS-KSM 004",
-        latitude: "50",
-        longtitude: "100",
-        time: "11:12 ",
-        date: "2022-10-02",
-        ec: "200 ",
-      },
-      {
-        id: "OBS-KSM 005",
-        latitude: "40",
-        longtitude: "100",
-        time: "11:12 ",
-        date: "2022-10-02",
-        ec: "200 ",
-      },
-    ],
-    color: "#1E7E9C",
-    editedIndex: -1,
-    editedItem: {
-      id: "",
-      name: "",
-      latitude: "",
-      longtitude: "",
-      date: "",
-      time: "",
-      ec: "",
-    },
-    defaultItem: {
-      id: "",
-      name: "",
-      latitude: "",
-      longtitude: "",
-      date: "",
-      time: "",
-      ec: "",
-    },
-  }),
+// Navigation
+const dialog = ref(false);
+const dialogDelete = ref(false);
 
-  computed: {
-    formTitle() {
-      return this.editedIndex === -1
-        ? "បង្កើតព័ត៌មានថ្មីរបស់កម្រិតទឹកសមុទ្រ"
-        : "កែប្រែព័ត៌មានរបស់កម្រិតទឹកសមុទ្រ";
-    },
+const formTitle = computed(() => {
+  return editedIndex.value === -1
+    ? "បង្កើតព័ត៌មានថ្មីរបស់កម្រិតទឹកសមុទ្រ"
+    : "កែប្រែព័ត៌មានរបស់កម្រិតទឹកសមុទ្រ";
+});
+
+//
+const search = ref("");
+const editedIndex = ref(-1);
+const editedItem = ref({
+  id: "",
+  name: "",
+  latitude: "",
+  longtitude: "",
+  date: "",
+  time: "",
+  ec: "",
+});
+
+const defaultItem = ref({
+  id: "",
+  name: "",
+  latitude: "",
+  longtitude: "",
+  date: "",
+  time: "",
+  ec: "",
+});
+const headers = [
+  {
+    text: "លេខសម្គាល់",
+    align: "start",
+    sortable: false,
+    value: "id",
+    width: "10%",
+    class: "white--text",
   },
-
-  watch: {
-    dialog(val) {
-      val || this.close();
-    },
-    dialogDelete(val) {
-      val || this.closeDelete();
-    },
+  {
+    text: "រយៈទទឹង",
+    value: "latitude",
+    width: "10%",
+    class: "white--text",
   },
-
-  methods: {
-    exportData() {
-      const worksheet = XLSX.utils.json_to_sheet(this.users);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-      XLSX.writeFile(workbook, "តារាងកម្រិតទឹកសមុទ្រ.xlsx");
-    },
-
-    editItem(item) {
-      this.editedIndex = this.users.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
-    },
-
-    deleteItem(item) {
-      this.editedIndex = this.users.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialogDelete = true;
-    },
-
-    deleteItemConfirm() {
-      this.users.splice(this.editedIndex, 1);
-      this.closeDelete();
-    },
-
-    close() {
-      this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-
-    closeDelete() {
-      this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.users[this.editedIndex], this.editedItem);
-      } else {
-        this.users.push(this.editedItem);
-      }
-      this.close();
-    },
+  {
+    text: "រយៈបណ្ដោយ",
+    value: "longtitude",
+    width: "10%",
+    class: "white--text",
   },
+  {
+    text: "ថ្ងៃខែឆ្នាំ",
+    value: "date",
+    width: "10%",
+    class: "white--text",
+  },
+  { text: "ពេលវេលា", value: "time", width: "10%", class: "white--text" },
+  { text: "តម្លៃEc", value: "ec", width: "10%", class: "white--text" },
+];
+const ទិន្នន័យ = ref([
+  {
+    id: "OBS-KSM 001",
+    latitude: "120",
+    longtitude: "200",
+    time: "11:12 ",
+    date: "2022-10-02",
+    ec: "200 ",
+  },
+  {
+    id: "OBS-KSM 002",
+    latitude: "100",
+    longtitude: "200",
+    time: "11:12 ",
+    date: "2022-10-02",
+    ec: "200 ",
+  },
+  {
+    id: "OBS-KSM 003",
+    latitude: "110",
+    longtitude: "500",
+    time: "11:12 ",
+    date: "2022-10-02",
+    ec: "200 ",
+  },
+  {
+    id: "OBS-KSM 004",
+    latitude: "50",
+    longtitude: "100",
+    time: "11:12 ",
+    date: "2022-10-02",
+    ec: "200 ",
+  },
+  {
+    id: "OBS-KSM 005",
+    latitude: "40",
+    longtitude: "100",
+    time: "11:12 ",
+    date: "2022-10-02",
+    ec: "200 ",
+  },
+]);
+const exportData = () => {
+  const worksheet = XLSX.utils.json_to_sheet(ទិន្នន័យ.value);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+  XLSX.writeFile(workbook, "តារាងកម្រិតទឹកសមុទ្រ.xlsx");
+};
+
+const editItem = (item?) => {
+  editedIndex.value = ទិន្នន័យ.value.indexOf(item);
+  editedItem.value = Object.assign({}, item);
+  dialog.value = true;
+};
+
+const deleteItem = (item) => {
+  editedIndex.value = ទិន្នន័យ.value.indexOf(item);
+  editedItem.value = Object.assign({}, item);
+  dialogDelete.value = true;
+};
+
+const deleteItemConfirm = () => {
+  ទិន្នន័យ.value = ទិន្នន័យ.value.splice(editedIndex.value, 1);
+  closeDelete();
+};
+
+const close = () => {
+  dialog.value = false;
+  editedItem.value = Object.assign({}, defaultItem.value);
+  editedIndex.value = -1;
+};
+
+const closeDelete = () => {
+  dialogDelete.value = false;
+  editedItem.value = Object.assign({}, defaultItem.value);
+  editedIndex.value = -1;
+};
+
+const save = () => {
+  if (editedIndex.value > -1) {
+    Object.assign(ទិន្នន័យ.value[editedIndex.value], editedItem.value);
+  } else {
+    ទិន្នន័យ.value = [...ទិន្នន័យ.value, editedItem.value];
+  }
+  close();
 };
 </script>
 <style scoped>
@@ -331,10 +313,10 @@ body {
 .khmer-font-body {
   font-size: 16px;
 }
-::v-deep .v-data-table-header {
+:v-deep(.v-data-table-header) {
   background-color: #2197bc;
 }
-v-data-table >>> div > table {
+.v-data-table :deep(.div .table) {
   border-spacing: 0 0.5rem;
 }
 </style>

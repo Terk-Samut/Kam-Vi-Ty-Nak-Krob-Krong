@@ -24,7 +24,7 @@ const générerExtentions = () => {
     NodeGlobalsPolyfillPlugin({
       buffer: true,
       process: true,
-    })
+    }),
   );
   extentions.push({
     name: "vite:global-polyfill",
@@ -52,7 +52,7 @@ const générerExtentions = () => {
   extentions.push(
     builtins({
       fs: true,
-    })
+    }),
   );
   return extentions;
 };

@@ -262,10 +262,10 @@ body {
 .khmer-font-body {
   font-size: 16px;
 }
-::v-deep .v-data-table-header {
+:v-deep(.v-data-table-header) {
   background-color: #2197bc;
 }
-v-data-table >>> div > table {
+.v-data-table :deep(.div .table) {
   border-spacing: 0 0.5rem;
 }
 </style>
